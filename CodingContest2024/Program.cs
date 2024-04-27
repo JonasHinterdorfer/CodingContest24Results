@@ -34,8 +34,8 @@ public static class Program
         List<Func<List<string>, object>> functions = new List<Func<List<string>, object>>();
         functions.Add(ParserOne);
         
-        InputOutputHelper.Process(Solution, new Parser(functions));
         Tester.Process(Solution, new Parser(functions, true));
+        InputOutputHelper.Process(Solution, new Parser(functions));
         
         // If you want to take the first line or anything for info just remove it here
         // BUT! Default is that the first line of each input contains number of lines + params
