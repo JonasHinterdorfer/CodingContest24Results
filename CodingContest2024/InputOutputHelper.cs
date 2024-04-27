@@ -10,12 +10,12 @@ public static class InputOutputHelper
     private static string GetFilePath(bool input, string fileName = "")
     {
         string addon = input ? InputFilePath : OutputFilePath;
-        
+
         if (fileName == "")
         {
             return Path.Combine(Directory.GetCurrentDirectory(), addon);
         }
-        
+
         return Path.Combine(Directory.GetCurrentDirectory(), addon, fileName);
     }
 
@@ -23,18 +23,17 @@ public static class InputOutputHelper
     {
         string inputPath = GetFilePath(true);
         string outputPath = GetFilePath(false);
-
-        foreach (string filePath in Directory.GetFiles(outputPath))
-        {
-            File.Delete(filePath);
-        }
+        CancellationTokenSource cts = new CancellationTokenSource();
         
-        foreach (string filePath in Directory.GetFiles(inputPath))
+        Parallel.ForEach(Directory.GetFiles(outputPath), filePath => { File.Delete(filePath); });
+
+        Parallel.ForEach(Directory.GetFiles(inputPath), filePath =>
         {
             List<string> lines = solution.Invoke(parser);
             string fileName = filePath.Split(Path.DirectorySeparatorChar)[^1];
 
             File.WriteAllLines(Path.Combine(outputPath, fileName), lines);
-        }
+            Console.WriteLine($"File {fileName} processed");
+        });
     }
 }
